@@ -1,0 +1,58 @@
+{
+  "obstacles": [
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [-25, -25, 0],
+      "type": 1
+    },
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [25, 25, 0],
+      "type": 1
+    },
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [-25, 25, 0],
+      "type": 1
+    },
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [25, -25, 0],
+      "type": 1
+    },
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [-50, 0, 0],
+      "type": 1
+    },
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [50, 0, 0],
+      "type": 1
+    },
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [0, -50, 0],
+      "type": 1
+    },
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [0, 50, 0],
+      "type": 1
+    },
+    {
+      "size": 10,
+      "detection_radius": 10,
+      "position": [0, 0, 0],
+      "type": 2
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+/* latin-ext */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Raleway'), local('Raleway-Regular'), url(https://fonts.gstatic.com/s/raleway/v11/YZaO6llzOP57DpTBv2GnyFKPGs1ZzpMvnHX-7fPOuAc.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Raleway'), local('Raleway-Regular'), url(https://fonts.gstatic.com/s/raleway/v11/QAUlVt1jXOgQavlW5wEfxQLUuEpTyoUstqEm5AMlJo4.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+/* Overrides */
+
+.giphy-embed {
+  max-width:100%;
+  max-height: 100%;
+}
+
+.w3-container.w3-card-4 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.w3-container.w3-card-2 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/* Custom */
+
+.content {
+  padding: 0px 35px 0px 35px;
+}
+
+ul.table-of-contents li {
+  cursor: pointer;
+}
+
+#preview {
+  position: relative;
+}
+
+#preview .preview-entry {
+  position: absolute;
+  display: none;
+  height: 485px;
+}
+
+#preview .preview-entry iframe {
+  display: block;
+  margin: auto;
+}
+
+.shortcuts div.left {
+  float: left;
+  width: 10%;
+}
+
+.shortcuts div.right {
+  float: right;
+  width: 90%;
+}
+
+.debug div.left {
+  float: left;
+  width: 35%;
+}
+
+.debug div.right {
+  float: right;
+  width: 65%;
+}
+
+.options div.left {
+  float: left;
+  width: 25%;
+}
+
+.options div.left2 {
+  float: left;
+  padding-left: 10px;
+}
+
+.options div.right {
+  float: right;
+  width: 75%;
+}
+
+.debug div {
+  margin: 5px 0 5px 0;
+}
+
+div.bullet-contain {
+  overflow: auto;
+  margin: 5px 0 5px 0;
+}

@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <style>
+        body {
+            padding: 100px;
+            width: 1000px;
+            margin: auto;
+            text-align: left;
+            font-weight: 300;
+            font-family: 'Open Sans', sans-serif;
+            color: #121212;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Source Sans Pro', sans-serif;
+        }
+    </style>
+    <title>CS 184 Final Project</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2017</h1>
+<h1 align="middle">Final Project: Flocking Simulation</h1>
+<h2 align="middle">Gloria Hwang, CS184-adl</h2>
+<h2 align="middle">David Hahn, CS184-abr</h2>
+
+<br><br>
+
+<div>
+
+    <h2 align="middle">Overview</h2>
+    <p>
+        We plan to create a graphics simulation which represents units that interact with each other to emulate
+        natural flocking behavior which is most evident in schools of fish and flocks of birds. The flocking behavior
+        itself is fairly straightforward to implement but we plan to extend the basic flocking algorithm to allow for
+        a variety of features which are covered in the deliverables section below.
+    </p>
+
+    <h2 align="middle">Problem Description</h2>
+    <p>
+        The flocking behavior algorithm on its own is fairly straightforward. We are referencing an article we found online
+        that covers how to accomplish the basic algorithm in flash and AS3 but adapting it to C++.
+    </p>
+    <p>
+        From there, the goals become more difficult. We'll be using a quadtree to speed up unit collision detection rather
+        than using a naive O(n^2) algorithm (e.g. comparing every unit to every other unit). We will also implement an algorithm
+        that smoothly deters the units from obstacles (possibly using the unit's distance to an obstacle as part of the probability
+        of the unit avoiding the obstacle). Another goal of ours is to apply what we learned in the rasterization project to our
+        unit models to make them more realistic (for example mapping a texture to a mesh of a fish).
+    </p>
+
+    <h2 align="middle">Goals and Deliverables</h2>
+    <p>
+    <ul>
+        <li>Basic flocking algorithm implemented in 2D</li>
+        <li>GUI for tracking units and moving around the scene</li>
+        <li>Texture mapping for units</li>
+        <li>An array of specialized units or obstacles:
+            <ul>
+                <li>Predatory animals which kill units on collision and influence unit behavior (e.g. prey units try to
+                    avoid predators)</li>
+                <li>Obstacles which are unmoving but are avoided by moving units</li>
+            </ul>
+        </li>
+        <li>Create an interactive system such that the mouse acts like an obstacle and deters the units from moving towards
+            the mouse</li>
+    </ul>
+    </p>
+
+    <h2 align="middle">Milestone Report</h2>
+    <p>
+        We extended the GUI used in Project 4 to show our flock simulation. In our GUI, there is an area sectioned off by a set of lines in which the   flock units can move. We tried to generate the flock units with a mouse click and have its position based on the cursor's position. However, we had trouble translating the cursor's position, which was given relative to the coordinates of the screen, to coordinates corresponding to the camera space (!!!!!). Therefore, we created a square cursor that moves according to the actual cursor's position, but scaled to be within the flocking area. So whenever the mouse gets clicked, one flock unit with a random direction is generated at the location of the square cursor. <br><br>
+        We also simulated basic flocking behavior according to three rules: alignment, cohesion, and separation.
+    <ul>
+        <li>Alignment is the behavior that causes nearby units to flock together. In order to implement alignment, for each unit, we checked all the other units and kept track of the units whose positions were within a defined radius from the given unit. Then, we averaged the nearby units' normalized directions, and added it to the given unit's direction.<br><br></li>
+        <li>Cohesion is the behavior that causes the flock to move in a certain direction. Similar to alignment, for each unit, we kept track of nearby units. However, instead of averaging the nearby units' directions, we instead averaged the positions of the nearby units. Then, we got the direction from the given unit's position to this averaged position, and added it to the given unit's direction. As a result, the units of a flock should move towards the average of all of the units' positions.<br><br></li>
+        <li>Separation is the behavior of flocks, that prevents units flocking together from getting too close and colliding with each other. In order to implement this behavior, we first defined another smaller radius. Then for each unit, we kept track of neighboring units whose positions were within this smaller radius. Finally, we averaged the normalized directions starting from a neighboring unit towards the given unit's position. By adding this average direction to the given unit's direction, the given unit should steer away from neighboring units too close by.<br><br></li>
+    </ul>
+    We further implemented obstacle collision avoidance. We added a keyboard shortcut "o" to switch the mouse click from generating a flock unit to generating a static square obstacle, and a keyboard shortcut "u" to revert the mouse click back to generating a flock unit.
+    </p>
+
+    <h2 align="middle">Schedule</h2>
+    <p>
+        We are currently on track relative to the schedule we set up. We were able to implement everything we hoped to have by this point:
+    <ul>
+        <li>Basic flocking algorithm</li>
+        <li>GUI showing moving units</li>
+        <li>Generation of static obstacles in GUI</li>
+        <li>Obstacle collision avoidance algorithm</li>
+    </ul>
+
+    Our schedule for the following weeks is as follows:
+    Week 3 (starting on April 24)
+    <ul>
+        <li>Add interactive element such that the mouse cursor acts like a moving obstacle</li>
+        <li>Include cool textures to create more realistic units and obstacles (ie. fishes, algae, coral reef)</li>
+        <li></li>
+    </ul>
+    Week 4 (starting on May 1)
+    <ul>
+        <li>Add moving obstacles, other than the mouse cursor, like predators that the units will have to avoid</li>
+        <li>May 5 (F): Final Due Date</li>
+    </ul>
+    </p>
+
+    <h2 align="middle">Resources</h2>
+    <p>
+        Articles:
+    <ul>
+        <li>
+            <a href="https://gamedevelopment.tutsplus.com/tutorials/3-simple-rules-of-flocking-behaviors-alignment-cohesion-and-separation--gamedev-3444">"3 Simple Rules of Flocking Behaviors: Alignment, Cohesion, Separation" by Vijay Pemmaraju</a>
+        </li>
+        <li>
+            <a href="http://www.red3d.com/cwr/boids/">"Boids: Background and Update" by Craig Reynolds</a>
+        </li>
+        <li>
+            <a href="http://isis.dia.unisa.it/projects/gebs/paper/GEBs.pdf">"Massive simulation using GPU of a distributed behavioral model of a flock
+                with obstacle avoidance" by Ugo Erra, Rosario De Chiara, Vittorio Scarano, Maurizio Tatafiore</a>
+        </li>
+    </ul>
+    </p>
+
+
+</body>
+</html>

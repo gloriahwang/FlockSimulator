@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)https://www.w3schools.com/w3css/tryw3css_templates_blog.htm -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Flocking Simulation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link rel="stylesheet" href="./resources/w3.css">
+<link rel="stylesheet" href="./resources/style.css">
+<style>
+body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+</style>
+<style type="text/css">
+:root a[rel="nofollow"],
+:root #mainLeaderboard,
+:root .ezo_ad,
+:root .ezoic-floating-bottom,
+:root .ezoic-ad
+{ display: none !important; }</style>
+</head><body class="w3-light-grey">
+
+<script src="./resources/jquery-3.2.1.min.js"></script>
+<script src="./resources/main.js"></script>
+
+<!-- w3-content defines a container for fixed size centered content, 
+and is wrapped around the whole page content, except for the footer in this example -->
+<div class="w3-content" style="max-width:1400px">
+
+<!-- Header -->
+<header class="w3-container w3-center w3-padding-32 ">
+  <h1><b>Flocking Simulation</b></h1>
+  <p>CS 184 Final Project by <a href="https://ddavidhahn.github.io"><span class="w3-tag">David Hahn</span></a> and <a href="https://github.com/gloriahwang"><span class="w3-tag">Gloria Hwang</span></a></p>
+</header>
+
+<!-- Grid -->
+<div class="w3-row">
+
+<div class="w3-center">
+  <iframe src="https://giphy.com/embed/3ohzdJybpRBnDKScKs?html5=true" width="480" height="478" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+</div>
+<!-- Blog entries -->
+<div class="w3-col l12 s12">
+  <!-- Blog entry -->
+  <div class="w3-card-4 w3-margin w3-white">
+    <div class="w3-container">
+      <h3><b>Introduction</b></h3>
+    </div>
+
+    <div class="w3-container content">
+      <p>
+        For our final project for <a href="https://cs184.org/">CS 184: Computer Graphics and Imaging</a>, we decided to
+        explore the concept of simulating artificial flocking behavior in a graphics engine. We used the ideas presented in
+        <a href="http://www.red3d.com/cwr/boids/">a paper written by Craig Reynolds</a> as a basis for our simulation. While we focused on movements
+        that resembled the behavior of fish in a body of water, other groups of animals, for example a flock of birds or
+        a herd of zebras, could be simulated following a similar high level design. The realism of the behavior can be
+        furthered by tweaking the movement parameters and adding different force vectors to better simulate the animal's
+        behavior.
+      </p>
+      <p>
+        All the code we wrote can be found <a href="https://github.com/ddavidhahn/cs184_projfinal/">here</a>. We reused code
+        from the cloth simulator project which is why the GUI and code may look familiar.
+      </p>
+      <div class="w3-row">
+      </div>
+    </div>
+  </div>
+  <div class="w3-row">
+    <div class="w3-col l3 s12">
+      <div class="w3-container">
+      </div>
+    </div>
+    <div class="w3-col l6 s12">
+      <div class="w3-card-4 w3-margin w3-center">
+        <div class="w3-container w3-padding">
+          <h4>Table of Contents</h4>
+        </div>
+        <ul class="w3-ul w3-hoverable w3-white table-of-contents">
+          <li class="w3-padding-16" data-goto="#rules" data-preview="#rules_preview">
+            <span class="w3-large">The 3 Rules of Flocking</span><br>
+          </li>
+          <li class="w3-padding-16" data-goto="#collisions" data-preview="#collisions_preview">
+            <span class="w3-large">Avoidance and Attraction Obstacles</span><br>
+          </li>
+          <li class="w3-padding-16" data-goto="#mouse" data-preview="#mouse_preview">
+            <span class="w3-large">Mouse Interactions</span><br>
+          </li>
+          <li class="w3-padding-16" data-goto="#predators" data-preview="#predators_preview">
+            <span class="w3-large">Predators</span><br>
+          </li>
+          <li class="w3-padding-16" data-goto="#gui">
+            <span class="w3-large">GUI Features</span><br>
+          </li>
+          <li class="w3-padding-16" data-goto="#demos" data-preview="#demos_preview">
+            <span class="w3-large">Demos</span><br>
+          </li>
+          <li class="w3-padding-16" data-goto="#conclusion">
+            <span class="w3-large">Conclusion</span><br>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="w3-card-4 w3-margin w3-white" id="rules">
+    <div class="w3-container">
+      <h3><b>The 3 Rules of Flocking</b></h3>
+    </div>
+
+    <div class="w3-container content">
+      <p>
+        There are 3 force vectors that build up the foundation of flocking behavior: alignment, cohesion, and separation.
+        Each image depicts the relevant force vector for a specific unit (marked in red).
+      </p>
+    </div>
+    <div class="w3-row">
+      <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center w3-card-4">
+          <p>Alignment</p>
+            <iframe src="https://giphy.com/embed/l4FGsJZhq9wx5gczC?html5=true" width="400" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>A given unit attempts to face the same direction as its neighbors.</p>
+        </div>
+      </div>
+
+      <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center w3-card-4">
+          <p>Cohesion</p>
+            <iframe src="https://giphy.com/embed/xUA7aSnfJcPg7YkAQo?html5=true" width="400" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>A given unit attempts to move to the center of mass of its neighbors.</p>
+        </div>
+      </div>
+
+      <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center w3-card-4">
+          <p>Separation</p>
+            <iframe src="https://giphy.com/embed/3og0IRjd0wvWCZlQs0?html5=true" width="400" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>A given unit attempts to move away from neighbors who are too close.</p>
+        </div>
+      </div>
+    </div>
+    <div class="w3-container content">
+      <p></p>
+    </div>
+    <div class="w3-container content">
+      <h5>Alignment, Cohesion, and Separation</h5>
+      <div class="w3-container content">
+        <p>
+          The alignment vector is calculated using neighboring units' normalized velocity vectors. The cohesion vector is
+          calculated using the difference between the neighbor's position and the unit's position. The separation vector
+          is the opposite of the cohesion vector. For cohesion and separation, the contributions are also divided by the
+          neighbor's distance from the unit so that units that are further away have less impact than those which are
+          close. The individual contributions of each neighboring unit are averaged to output the final vector.
+        </p>
+        <p>
+          Each of these vectors is taken for a given radius around the unit. The radii are staggered like concentric rings.
+          So given 3 radii <b>a</b>, <b>b</b>, and <b>c</b>, where <b>a</b> < <b>b</b> < <b>c</b>, separation is only
+          calculated using units within the circle with radius <b>a</b>. Alignment is only calculated using units within
+          the disk with inner radius <b>a</b> and outer radius <b>b</b>. And finally, cohesion is only calculated using
+          units within the disk with inner radius <b>b</b> and outer radius <b>c</b>. This is why the separation and
+          cohesion vectors would not simply cancel each other out.
+        </p>
+      </div>
+    </div>
+    <div class="w3-container content">
+      <h5>Cruise: the Secret 4th Rule</h5>
+      <div class="w3-container content">
+        <p>
+          One last detail is the cruise speed vector. We gained this insight by looking at a
+          <a href="http://www.emileechen.com/flocking/">similar flocking simulation</a>
+          project by Emilee Chen last year. The purpose of this vector is to limit the speed of the unit so that it does
+          not accelerate uncontrollably. We simply take the difference between the target cruising speed and the current
+          velocity and then scale the velocity's unit vector by this. This vector is thus also used in the acceleration
+          vector computation.
+        </p>
+      </div>
+    </div>
+    <div class="w3-row">
+      <div class="w3-col l4 s12" style="padding: 0 5px 0 5px;">
+        <div class="w3-container w3-center w3-card-4">
+        </div>
+      </div>
+
+      <div class="w3-col l4 s12" style="padding: 0 5px 0 5px;">
+        <div class="w3-container w3-center w3-card-4">
+          <p>Cruise</p>
+            <iframe src="https://giphy.com/embed/xUPGcrU8RP58o4WGuA?html5=true" width="400" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>A given unit attempts to accelerate towards the cruising speed whether it is moving too quickly or too slowly.</p>
+        </div>
+      </div>
+    </div>
+    <div class="w3-container content">
+      <div class="w3-container content">
+        <p>We noticed this worked a lot better than simply
+          limiting the magnitude of the velocity vector, since this allows the change to occur in acceleration and thus
+          less direct and unstable impact on the velocity.</p>
+      </div>
+    </div>
+    <div class="w3-container content">
+      <h5>Position, Velocity, and Acceleration</h5>
+      <div class="w3-container content">
+        <p>
+          We take these force vectors and then weight them by some weights depending on how much we want each vector
+          to contribute to the overall force. For our purposes, the separation vector was weighted the most, then the
+          cohesion vector, then the alignment vector. Finally, we add the weighted vectors together and treat this as an
+          acceleration vector.
+        </p>
+        <p>
+          We limit the magnitude of the acceleration vector so acceleration can never be too large. Then, for any given
+          time step, we calculate position and velocity as follows via semi-implicit Euler: <br>
+          <p class="w3-center">
+            x(t + dt) = x(t) + v(t + dt)<br>
+            v(t + dt) = v(t) + a(t)
+          </p>
+        </p>
+        <p>
+          With this, the basic functionality of a flock of units is complete. We additionally added a simple color averaging
+          function and some random noise into unit colors which is why they change colors when joining a group.
+        </p>
+      </div>
+    </div>
+    <div class="w3-row">
+      <div class="w3-col l2 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center"></div>
+      </div>
+      <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center w3-card-2">
+          <p>All 4 Force Vectors at Work</p>
+          <iframe src="https://giphy.com/embed/3o7bukmqM2O1eIfRmg?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>
+            Notice alignment and cohesion are relatively stable but separation and cruise are more reactive. This is
+            due to the large potential variance they introduce in their calculations.
+          </p>
+        </div>
+      </div>
+      <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center w3-card-2">
+          <p>Flocking Behavior</p>
+          <iframe src="https://giphy.com/embed/3oKIPcIWPLzOxYZ2lG?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>
+            We have flocking! <br><br>Adjusting weights and radii results in different flocking behaviors where different vectors
+            are favored over others.
+          </p>
+        </div>
+      </div>
+      <div class="w3-container content">
+        <p></p>
+      </div>
+    </div>
+  </div>
+  <div class="w3-card-4 w3-margin w3-white" id="collisions">
+    <div class="w3-container">
+      <h3><b>Avoidance and Attraction Obstacles</b></h3>
+    </div>
+
+    <div class="w3-container content">
+      <p>
+        We additionally implemented obstacles which impact unit movement: avoidance and attraction obstacles. As their names suggest,
+        units will move to avoid colliding with obstacles when within a certain distance of them and will move to get closer
+        to attraction obstacles no matter how far away they are. Both vectors are created by first calculating the unit direction
+        from the obstacle's position to the unit's position for attraction obstacles and vice versa for avoidance obstacles. Then,
+        we take each of these vectors and find the difference with the units' current direction. This is the avoidance or attraction
+        vector for a given obstacle and we compute the final vector by averaging over all obstacles.
+      </p>
+      <p>
+        Below is an example of a unit moving towards an attraction obstacle, but comes across an intermediary avoidance obstacle. The yellow line
+        represents the unit's avoidance vector and the red line represents the unit's attraction vector.
+      </p>
+    </div>
+    <div class="w3-row">
+      <div class="w3-col l4 s12" style="padding: 0 5px 0 5px;">
+        <div class="w3-container w3-center w3-card-4">
+        </div>
+      </div>
+      <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center w3-card-2">
+          <p>Avoidance and Attraction Obstacles</p>
+            <iframe src="https://giphy.com/embed/xUA7aXMIYOGjyvba7e?html5=true" width="400" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>
+            Notice the attraction vector doesn't change drastically until the unit is affected by the avoidance obstacle.
+            This is because the unit's attraction vector attempts to correct the current velocity to travel towards the attraction obstacle.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="w3-container content">
+      <p>
+        The obstacle avoidance and attraction vectors are also weighted and used in the overall acceleration calculation
+        detailed above. When the unit is part of a larger flock, the unit's behavior is not only affected by its avoidance and attraction vectors, but also
+        the behaviors of its neighbors in the flock.
+      </p>
+    </div>
+    <div class="w3-row">
+      <div class="w3-col l2 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center"></div>
+      </div>
+      <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center w3-card-4">
+          <p>Avoidance Obstacle</p>
+          <iframe src="https://giphy.com/embed/3o7btWarBDJC7feoFi?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>Units attempt to avoid these obstacles and move away if they collide with them.</p>
+        </div>
+      </div>
+      <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+        <div class="w3-container w3-center w3-card-4">
+          <p>Attraction Obstacle</p>
+          <iframe src="https://giphy.com/embed/xUA7bgRAYzu5YYgsaA?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+          <p>Units are attracted to these obstacles and attempt to crowd around them.</p>
+        </div>
+      </div>
+    </div>
+    <div class="w3-container .content">
+    <p></p>
+    </div>
+  </div>
+    <div class="w3-card-4 w3-margin w3-white" id="mouse">
+      <div class="w3-container">
+        <h3><b>Mouse Interactions</b></h3>
+      </div>
+
+      <div class="w3-container content">
+        <p>
+          After implementing the static obstacles, we thought it would be interesting to see how movement of the obstacles
+          would affect the units' behavior. We used the mouse's position to accomplish this movement. The units will
+          follow the mouse in attraction mode and be afraid of the mouse and move away in avoidance mode. The vector is
+          calculated very similarly to the collision obstacles above.
+        </p>
+      </div>
+      <div class="w3-row">
+        <div class="w3-col l2 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center"></div>
+        </div>
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Avoid Mouse</p>
+            <iframe src="https://giphy.com/embed/l4FGjaFlgthbDj8Yw?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p>
+            <p>Units attempt to avoid the mouse and move away if they collide with it.</p>
+          </div>
+        </div>
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Follow Mouse</p>
+            <iframe src="https://giphy.com/embed/3og0IIiNdwkEFvCuVq?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            <p>Units are attracted to the mouse and attempt to crowd around it.</p>
+          </div>
+        </div>
+      </div>
+      <div class="w3-container content">
+        <p>
+          These vectors are also weighted and used in the acceleration vector calculation.
+        </p>
+      </div>
+    </div>
+
+    <div class="w3-card-4 w3-margin w3-white" id="predators">
+      <div class="w3-container">
+        <h3><b>Predators</b></h3>
+      </div>
+
+      <div class="w3-container content">
+        <p>
+          Now that our regular units had a decent amount of functionality, we decided that it would be interesting to try to code
+          another type of unit which has different movement characteristics. We decided to introduce predator units which,
+          as their name suggests, are capable of eating our regular flock units. In addition, we tried to emulate the
+          movement of a shark which slowly approaches its prey, stalking it in the water, then jumps out quickly to
+          try to catch it. We can split the predatory behavior into 4 subgroups: prey seeking, death, speed, and predator avoidance.
+        </p>
+      </div>
+      <div class="w3-row">
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Prey Seeking</p>
+            <iframe src="https://giphy.com/embed/3ohzdW5CmhMi35QcNy?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            <p>
+              Predators seek prey and turn red when they eat. <br><br>(Jumping and predator avoidance were turned off)
+            </p>
+          </div>
+        </div>
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Death</p>
+            <iframe src="https://giphy.com/embed/xUA7aPsRt3kj3BEMZa?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            <p>
+              Predators die if they don't eat within a certain period of time. <br>(No flock units generated)
+            </p>
+          </div>
+        </div>
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Speed</p>
+            <iframe src="https://giphy.com/embed/l4FGnClinl6NF7Kp2?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            <p>
+              Predators can jump forwards. Speed is available when the predator tail is green and grey otherwise.<br>(Predator avoidance was turned off)
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="w3-container content">
+        <p></p>
+        <h5>Prey Seeking</h5>
+        <div class="w3-container content">
+          <p>
+            Predators are hungry and will seek out prey they are not full. During this time, they will move much more
+            slowly than regular flock units, similar to a predator stalking its prey. Acceleration vectors are computed
+            similar to how they are for flock units but in this case, we only really have two vectors involved which are
+            seeking prey and separation from other predators. There is a noise vector as well to add a small amount of
+            randomness to the predators' movement.
+          </p>
+          <p>
+            When predators eat, they will be "full" for a short period of time which is indicated by them turning red.
+            Their seek vector is computed similar to the attraction obstacle seek vector is calculated for a normal
+            flock unit. They will go towards the average direction of their food.
+          </p>
+        </div>
+      </div>
+      <div class="w3-container content">
+        <h5>Death</h5>
+        <div class="w3-container content">
+          <p>
+            Predators don't live forever like flock units do. They will die if they do not eat within a certain amount of time.
+            As they get closer to their death, their color becomes more white. They simply disappear when they die.
+          </p>
+        </div>
+      </div>
+      <div class="w3-container content">
+        <h5>Speed</h5>
+        <div class="w3-container content">
+          <p>
+              Predators are able to jump forwards with a burst of speed that outmatches the max speed of any flock unit.
+              This gives them a natural advantage in terms of pure magnitude. However this jump has two disadvantages:
+              <ul>
+                <li>
+                  They can only jump forwards after waiting a certain amount of time after their last jump. This is
+                  depicted by the predator's tail turning green when jumping is available and grey when it is not. Note
+                  that sometimes, the predator may jump as soon as it is available in which case its tail will not seem to change color.
+                </li>
+                <li>
+                  They cannot change their trajectory when jumping forwards and will start to decelerate until the duration
+                  of their jump is over.
+                </li>
+              </ul>
+          </p>
+        </div>
+      </div>
+      <div class="w3-container content">
+        <h5>Interaction with Flock Units</h5>
+        <div class="w3-container content">
+          <p>
+            When a predator collides with a flock unit, that unit dies and the predator has "eaten" so it resets the counter
+            keeping track of how close to death it is. The predator ignores prey for a short time while it is "full" indicated
+            by its color being red.
+          </p>
+          <p>
+            Given the danger predators pose to prey, it would not be very fair for the prey units
+            to be unaware of predator units swimming around them. So prey units will actively attempt to avoid predator
+            units similar to how they avoid avoidance obstacles. However we limited the prey's vision of predators to allow
+            the predators a good chance of catching their prey. This gives the prey a chance for survival but a limited
+            chance at that.
+          </p>
+        </div>
+      </div>
+      <div class="w3-container content">
+        <h5>Putting It All Together</h5>
+        <div class="w3-container content">
+          <p>
+            Combining these attributes of the predatory behavior, we get some interesting interactions between predators
+            and prey which you can see below. The prey attempt to remain in their flocks but also prioritize avoiding
+            predators. And predators are able to disrupt groups of flock units due to this avoidance. Sometimes when a
+            predator attacks, it is unsuccessful in capturing its prey. However many times, it is successful thanks to
+            its superior speed.
+          </p>
+        </div>
+      </div>
+      <div class="w3-row">
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center"></div>
+        </div>
+        <div class="w3-col l4 s12">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Predatory Behavior</p>
+            <iframe src="https://giphy.com/embed/3o7buizw0r6gqV9CXm?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            <p>
+              Predatory behavior in action. AKA a feeding frenzy.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="w3-container content">
+        <p>
+        </p>
+      </div>
+    </div>
+
+    <div class="w3-card-4 w3-margin w3-white" id="gui">
+      <div class="w3-container">
+        <h3><b>GUI Features</b></h3>
+      </div>
+
+      <div class="w3-container content">
+        <p>
+          To display our flock simulation, we first extended the cloth simulation GUI. In order to the make the flock simulation
+          more interactive and informative, we made a GUI with useful metrics and the ability to toggle all the features implemented above.
+          Furthermore, we created a visualization of all the different forces and obstacles acting on a unit by creating a debug toolbar
+          that tracks a unit and shows vectors corresponding to individual forces. Additionally, the environment is
+          defined by the white outline and when units cross an environment border, they come out no the opposite side.
+        </p>
+      </div>
+        <div class="w3-row">
+          <div class="w3-col l6 s12" style="padding: 0 10px 0 10px;">
+              <div class="w3-container w3-center w3-card-4">
+                  <p>Flock Simulation GUI</p>
+                  <img src="./resources/gui.png" alt="alignment" style="width:100%">
+                  <p>Main GUI seen when running the simulation</p>
+              </div>
+          </div>
+          <div class="w3-col l6 s12" style="padding: 0 10px 0 10px;">
+            <div class="w3-container w3-center w3-card-4">
+              <p>Unit Tracking GUI</p>
+              <img src="./resources/tracking_debug.png" alt="alignment" style="width:100%">
+              <p>GUI seen when tracking a unit</p>
+            </div>
+          </div>
+        </div>
+
+    <div class="w3-container content">
+        <p>
+        </p>
+    </div>
+
+        <div class="w3-row">
+          <div class="w3-col l1 s12" style="padding: 0px 10px 0px 10px;">
+            <div class="w3-container content"><p></p></div>
+          </div>
+          <div class="w3-col l4 s12" style="padding: 0px 10px 0px 10px;">
+              <div class="w3-container w3-center w3-card-4">
+                  <p>Settings Panel</p>
+                  <img src="./resources/basic_behavior_toolbar.png" alt="cohesion" style="height:400px" class="w3-card-4">
+                  <p>General metrics and buttons for changing flock behavior</p>
+              </div>
+          </div>
+          <div class="w3-col l6 s12" style="padding: 0px 10px 0px 10px; margin-top: auto;">
+            <div class="w3-container content">
+              <h5>Settings Panel</h5>
+              <div class="w3-container content" style="vertical-align: middle;">
+                <p>
+                  In this panel, we display a number of totals which keeps track of how many units, obstacles, food,
+                  and predators. The add units metric is the number of units that will be added by the unit generating
+                  tool per click.
+                </p>
+                <p>
+                  Below the metrics are some buttons for controlling flocking behavior. These are all on by default but
+                  toggling them simply turns the force vector on or off, in other words whether or not it will be used
+                  in the acceleration vector calculation:
+                  <div class="content options">
+                    <div class="bullet-contain">
+                      <div>Alignment:</div>
+                      <div style="padding-left: 10px;">Flock units face the same way as each other.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div>Cohesion:</div>
+                      <div style="padding-left: 10px;">Flock units attempt to clump together in groups.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div>Separation:</div>
+                      <div style="padding-left: 10px;">Flock units avoid crowding.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div>Noise:</div>
+                      <div style="padding-left: 10px;">Adds random noise to the direction flock units.</div>
+                    </div>
+                  </div>
+                </p>
+                <p>
+                  The last button is random food generation which puts food in a random location in the environment
+                  periodically. Food is a feature we didn't fully have time to flesh out but essentially, food units
+                  enact a similar attraction force on flock units as do attraction obstacles. The only difference is the
+                  radius of the force is limited and units reproduce, in other words create a new unit, when they eat food.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+      <div class="w3-container content">
+          <p>
+          </p>
+      </div>
+
+        <div class="w3-row">
+          <div class="w3-col l1 s12" style="padding: 0px 10px 0px 10px;">
+            <div class="w3-container content"><p></p></div>
+          </div>
+          <div class="w3-col l6 s12" style="padding: 0px 10px 0px 10px;">
+            <div class="w3-container content">
+              <h5>Tools Panel</h5>
+              <div class="w3-container content">
+                <p>
+                  We also added an array of tools users can use, represented by different colored cursors. On the right
+                  side, there is a legend on the right hand side of the GUI listing these tools users as well as
+                  the keyboard presses required to switch between tools.
+                  <div class="shortcuts">
+                    <div class="bullet-contain">
+                      <div class="left">1:</div>
+                      <div class="right">Click to generate a unit at the cursor's position. The number of units generated depends on the value
+                      in the settings panel which can be changed to a lower or higher power of 2 via the up and down arrow
+                      keys. </div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">2:</div>
+                      <div class="right">Click to generate an avoidance obstacle at the cursor's position.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">3:</div>
+                      <div class="right">Click to generate an attraction obstacle at the cursor's position.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">4:</div>
+                      <div class="right">Cursor becomes an eraser that deletes objects on click. Ctrl + scroll up or down manages increases or decreases, respectively, the area.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">5:</div>
+                      <div class="right">The flocks move towards the cursor's position.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">6:</div>
+                      <div class="right">The flocks avoid a small area around the cursor's position.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">7:</div>
+                      <div class="right">Click to generate food at the cursor's position.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">8:</div>
+                      <div class="right">Click to generate predators at the cursor's position.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">S:</div>
+                      <div class="right">Press to scatters units near the cursor's position.</div>
+                    </div>
+                    <div class="bullet-contain">
+                      <div class="left">T:</div>
+                      <div class="right">Press to enter or exit tracking mode. The camera zooms in on a random target unit, colored red
+                        for visibility, and follows it around the environment. Debug vectors also only become visible in
+                        tracking mode.</div>
+                    </div>
+                  </div>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="w3-col l4 s12" style="padding: 0px 10px 0px 10px;">
+            <div class="w3-container w3-center w3-card-4">
+              <p>Tools Panel</p>
+              <img src="./resources/generate_toolbar.png" alt="cohesion" style="height:400px" class="w3-card-4">
+              <p>All the tools we created for users to interact with the simulation</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="w3-container content">
+          <p></p>
+        </div>
+
+        <div class="w3-row">
+          <div class="w3-col l2 s12" style="padding: 0 10px 0 10px;">
+            <div class="w3-container"><p></p></div>
+          </div>
+          <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+            <div class="w3-container w3-center w3-card-4">
+              <p>Tracking Panel and Debug Vector Toolbar</p>
+              <img src="./resources/tracking_gui.png" alt="separation" height="200px" class="w3-card-4">
+              <p>Shows index of unit being tracked</p>
+              <br>
+              <p>Debug Toolbar for Tracking</p>
+              <img src="./resources/debug_toolbar.png" alt="separation" style="width:100%" class="w3-card-4">
+              <p>Allows selection of which force vectors are displayed in tracking mode</p>
+            </div>
+          </div>
+          <div class="w3-col l6 s12" style="padding: 0px 10px 0px 10px;">
+            <div class="w3-container content">
+              <h5>Tracking Panel and Debug Toolbar</h5>
+              <div class="w3-container content">
+                <p>
+                  As mentioned above, the keyboard shortcut "T" zooms in on a random unit and colors it red for visibility.
+                  By zooming in on one unit, we are able to see how the neighboring units in the same flock, and the obstacles
+                  affect this unit via the debug vectors. The tracking panel shows the index of the currently tracked unit and
+                  users are able to cycle through units using the left and right arrow keys. To exit tracking mode, simply
+                  press "T" again.
+                </p>
+                <p>
+                  Below is a list of available debug vectors:
+                  <div class="w3-center debug">
+                    <div>Alignment</div>
+                    <div>Cohesion</div>
+                    <div>Separation</div>
+                    <div>Obstacle Avoidance</div>
+                    <div>Predator Avoidance</div>
+                    <div>Noise</div>
+                    <div>Obstacle Attraction</div>
+                    <div>Cruise</div>
+                  </div>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="w3-container content">
+          <p></p>
+        </div>
+        <div class="w3-row">
+          <p></p>
+        </div>
+    </div>
+
+    <div class="w3-card-4 w3-margin w3-white" id="demos">
+      <div class="w3-container">
+        <h3><b>Demos</b></h3>
+      </div>
+
+      <div class="w3-container content">
+        <p>
+          Here are a couple of demo gifs we put together. Below them is a demo video which goes through the entire array of features as well as
+          how to use the GUI.
+        </p>
+      </div>
+
+      <div class="w3-row">
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Orbiting</p>
+            <iframe src="https://giphy.com/embed/xUA7aStHSgIZuM24De?html5=true" width="400px" height="400px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            <p>
+              Many of us spend our lives swimming, searching for our purpose.
+            </p>
+          </div>
+        </div>
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Bordered</p>
+            <iframe src="https://giphy.com/embed/3o7btY7SQ7H7eIGrDO?html5=true" width="400" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            <p>
+              Just keep swimming.
+              <br><br>
+            </p>
+          </div>
+        </div>
+        <div class="w3-col l4 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-4">
+            <p>Crowding</p>
+            <iframe src="https://giphy.com/embed/xUPGchfOX9EKTNap0Y?html5=true" width="400" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+            <p>
+              Just like a crowd of people trying to get through a small store entrance on Black Friday.
+              <br>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="w3-container content">
+        <p></p>
+      </div>
+
+      <div class="w3-row">
+        <div class="w3-col l3 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center"></div>
+        </div>
+        <div class="w3-col l6 s12" style="padding: 0 10px 0 10px;">
+          <div class="w3-container w3-center w3-card-2">
+            <p>Demo Video</p>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/AqYLu-LtyN4" frameborder="0" allowfullscreen style="max-width: 100%;"></iframe>
+            <p>
+              Video explanation of the flocking behaviors we implemented and our GUI features.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="w3-container content">
+        <p></p>
+      </div>
+
+
+    </div>
+
+    <div class="w3-card-4 w3-margin w3-white" id="conclusion">
+      <div class="w3-container">
+        <h3><b>Conclusion</b></h3>
+      </div>
+
+      <div class="w3-container content">
+        <p>
+          I really enjoyed working on this project. Even though the end result is not as visually stunning as some of the
+          renderings we did in the ray tracing project, this project had its own obstacles and I learned a lot from
+          working on it. The behavior of the units is the real focus of this project and I'm glad we were able to create a
+          simulation that was able to emulate flocking behavior.
+        </p>
+        <p>
+          Thankfully a lot of things were implemented for us already since we extended the cloth simulation code
+          but a big issue we encountered was getting our flock units to not jitter between directions. A huge breakthrough on this was
+          made when we went to office hours and got some advice from Kevin about adding the force vectors to the
+          acceleration of the unit rather than what we were doing originally which was adding them to the velocity of the unit.
+        </p>
+        <p>
+          One thing that we didn't get around to that I think would have been really cool is making the simulation more realistic
+          would be to rasterize textures onto the units and create some animation keyframes for the fish swimming and the
+          predators eating units. We considered this feature but deemed it a little too high risk high reward especially
+          considering the challenges of overcoming the uncanny valley so we went with creating the predator units instead.
+          Performance optimizations is another thing I think I would work on if I extend this project in the future as
+          our CPU based simulation cannot support more than 500-ish units at a time.
+        </p>
+        <p>
+          I had an awesome time in CS 184 and it ended up being one of my favorite classes that I took during my time as
+          an undergrad at Berkeley. Thank you to Professor Ren Ng and the course staff for putting the class together and
+          answering all my questions.
+        </p>
+        <p style="text-align: right;">
+          - David
+        </p>
+
+        <p>
+          This was a very interesting project to work on and I definitely took away a lot from it.
+          Although implementing flocking behavior initially seemed straightforward, this project had some problems and details
+          we had to work out. Our main focus for this project was to get the flocking behavior of the units correct and to create an interactive
+          simulation to show all the various behaviors we implemented.
+        </p>
+        <p>
+          We decided to extend the GUI given to us from the cloth simulator to display our flock simulation. However, because neither of us had
+          experience working with OpenGL, we encountered some trouble when we first started adding parts to our GUI. Once we figured out the basics,
+          it was really exciting seeing the GUI come together, units flock, and using the cursor toggles to interact with our flocks.
+        </p>
+        <p>
+          Although it would have been really cool to add textures onto the various objects, potentially creating a scene of fish swimming and predator sharks
+          (or the like), we were not able to get around to that. Instead, to create a more interesting scene than just white triangles flocking
+          together, we implemented color averaging for the flocks. As a result, you will notice that units in the same flock have the same color, and when
+          different flocks come together, their colors are averaged to create a new color for the bigger flock.
+        </p>
+        <p>
+          I had an amazing time taking CS 184 this semester! This class, being my first upper division CS class, was very intimidating in the beginning
+          and challenging at times. However, every project I worked on was fascinating and the results were stunning. Thank you Professor Ren Ng and the course staff
+          for a great semester.
+        </p>
+        <p style="text-align: right;">
+            - Gloria
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+  <hr>
+
+  <!--&lt;!&ndash; Blog entry &ndash;&gt;-->
+  <!--<div class="w3-card-4 w3-margin w3-white">-->
+  <!--<img src="./resources/bridge.jpg" alt="Norway" style="width:100%">-->
+    <!--<div class="w3-container">-->
+      <!--<h3><b>BLOG ENTRY</b></h3>-->
+      <!--<h5>Title description, <span class="w3-opacity">April 2, 2014</span></h5>-->
+    <!--</div>-->
+
+    <!--<div class="w3-container">-->
+      <!--<p>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem euismod placerat. Vivamus porttitor magna enim, ac accumsan tortor cursus at. Phasellus sed ultricies mi non congue ullam corper. Praesent tincidunt sed-->
+        <!--tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>-->
+      <!--<div class="w3-row">-->
+        <!--<div class="w3-col m8 s12">-->
+          <!--<p><button class="w3-button w3-padding-large w3-white w3-border"><b>READ MORE »</b></button></p>-->
+        <!--</div>-->
+        <!--<div class="w3-col m4 w3-hide-small">-->
+          <!--<p><span class="w3-padding-large w3-right"><b>Comments &nbsp;</b> <span class="w3-badge">2</span></span></p>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+<!-- END BLOG ENTRIES -->
+</div>
+
+<!--&lt;!&ndash; Introduction menu &ndash;&gt;-->
+<!--<div class="w3-col l4">-->
+  <!--&lt;!&ndash; About Card &ndash;&gt;-->
+  <!--<div class="w3-card-2 w3-margin w3-margin-top">-->
+  <!--<img src="./resources/avatar_g.jpg" style="width:100%">-->
+    <!--<div class="w3-container w3-white">-->
+      <!--<h4><b>My Name</b></h4>-->
+      <!--<p>Just me, myself and I, exploring the universe of uknownment. I have a heart of love and a interest of lorem ipsum and mauris neque quam blog. I want to share my world with you.</p>-->
+    <!--</div>-->
+  <!--</div><hr>-->
+
+  <!--&lt;!&ndash; Posts &ndash;&gt;-->
+  <!--<div class="w3-card-2 w3-margin">-->
+    <!--<div class="w3-container w3-padding">-->
+      <!--<h4>Popular Posts</h4>-->
+    <!--</div>-->
+    <!--<ul class="w3-ul w3-hoverable w3-white">-->
+      <!--<li class="w3-padding-16">-->
+        <!--<img src="./resources/workshop.jpg" alt="Image" class="w3-left w3-margin-right" style="width:50px">-->
+        <!--<span class="w3-large">Lorem</span><br>-->
+        <!--<span>Sed mattis nunc</span>-->
+      <!--</li>-->
+      <!--<li class="w3-padding-16">-->
+        <!--<img src="./resources/gondol.jpg" alt="Image" class="w3-left w3-margin-right" style="width:50px">-->
+        <!--<span class="w3-large">Ipsum</span><br>-->
+        <!--<span>Praes tinci sed</span>-->
+      <!--</li>-->
+      <!--<li class="w3-padding-16">-->
+        <!--<img src="./resources/skies.jpg" alt="Image" class="w3-left w3-margin-right" style="width:50px">-->
+        <!--<span class="w3-large">Dorum</span><br>-->
+        <!--<span>Ultricies congue</span>-->
+      <!--</li>-->
+      <!--<li class="w3-padding-16 w3-hide-medium w3-hide-small">-->
+        <!--<img src="./resources/rock.jpg" alt="Image" class="w3-left w3-margin-right" style="width:50px">-->
+        <!--<span class="w3-large">Mingsum</span><br>-->
+        <!--<span>Lorem ipsum dipsum</span>-->
+      <!--</li>-->
+    <!--</ul>-->
+  <!--</div>-->
+  <!--<hr>-->
+
+  <!--&lt;!&ndash; Labels / tags &ndash;&gt;-->
+  <!--<div class="w3-card-2 w3-margin">-->
+    <!--<div class="w3-container w3-padding">-->
+      <!--<h4>Tags</h4>-->
+    <!--</div>-->
+    <!--<div class="w3-container w3-white">-->
+    <!--<p><span class="w3-tag w3-black w3-margin-bottom">Travel</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">New York</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">London</span>-->
+      <!--<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">IKEA</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">NORWAY</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">DIY</span>-->
+      <!--<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Ideas</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Baby</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Family</span>-->
+      <!--<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">News</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Clothing</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Shopping</span>-->
+      <!--<span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Sports</span> <span class="w3-tag w3-light-grey w3-small w3-margin-bottom">Games</span>-->
+    <!--</p>-->
+    <!--</div>-->
+  <!--</div>-->
+
+<!--&lt;!&ndash; END Introduction Menu &ndash;&gt;-->
+<!--</div>-->
+
+<!-- END GRID -->
+</div><br>
+
+<!-- END w3-content -->
+</div>
+
+<!-- Footer -->
+<footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
+  <!--<button class="w3-button w3-black w3-disabled w3-padding-large w3-margin-bottom">Previous</button>-->
+  <!--<button class="w3-button w3-black w3-padding-large w3-margin-bottom">Next »</button>-->
+</footer>
+
+
+</body></html>
